@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>逊龢岛 - APK上传系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* 背景动画元素 */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 8s infinite linear;
+        }
+        
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) rotate(45deg);
+            }
+        }
+        
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.2s; }
+        .form-group:nth-child(2) { animation-delay: 0.3s; }
+        .form-group:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="file"]:focus {
+            border-color: #6a11cb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.2);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .file-input-button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            text-align: center;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        .file-input-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(106, 17, 203, 0.6);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .file-input-button:hover::after, .file-input-button:active::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        .file-input-button:hover {
+            background: #e9e9e9;
+            border-color: #6a11cb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-input-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .file-name {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+        
+        .file-name.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .progress-container {
+            display: none;
+            margin: 25px 0;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 12px;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            transition: width 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out 0.5s forwards;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        button:active::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(106, 17, 203, 0.4);
+        }
+        
+        .reset-btn {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .reset-btn:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .reset-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            animation: messageSlideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes messageSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+        
+        .info-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.7s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .info-links a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        
+        .info-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6a11cb;
+            transition: width 0.3s;
+        }
+        
+        .info-links a:hover::after {
+            width: 100%;
+        }
+        
+        .info-links a:hover {
+            color: #4a00e0;
+        }
+        
+        /* 触控特效 */
+        .touch-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            animation: touchExpand 0.6s ease-out forwards;
+            z-index: 9999;
+        }
+        
+        @keyframes touchExpand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.7;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .bounce {
+            animation: bounce 0.5s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 24px;
+            }
+            
+            header p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+    
+    <div class="container">
+        <header id="pageHeader">
+            <h1>逊龢岛 - APK上传系统</h1>
+            <p>安全、快速、便捷的应用上架平台</p>
+        </header>
+        
+        <div class="content">
+            <form id="uploadForm" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">应用名称</label>
+                    <input type="text" id="name" name="name" placeholder="请输入应用名称" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="apk">选择APK文件</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-button" id="apkButton">点击选择APK文件</div>
+                        <input type="file" id="apk" name="apk" accept=".apk" required>
+                    </div>
+                    <div class="file-name" id="apkFileName">未选择文件</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="icon">选择应用图标</label>
+                    <div class="file-input-wrapper">
+                        <div class="file-input-button" id="iconButton">点击选择图标文件</div>
+                        <input type="file" id="icon" name="icon" accept="image/*" required>
+                    </div>
+                    <div class="file-name" id="iconFileName">未选择文件</div>
+                </div>
+                
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">准备上传...</div>
+                
+                <div class="button-group">
+                    <button type="submit" class="submit-btn">立即上架</button>
+                    <button type="reset" class="reset-btn">重置表单</button>
+                </div>
+            </form>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="info-links">
+                <a href="apk_list.json" target="_blank">查看当前应用列表</a>
+                <a href="#" id="refreshLink">刷新页面</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建背景动画气泡
+            createBubbles();
+            
+            // 文件选择显示文件名
+            const apkInput = document.getElementById('apk');
+            const iconInput = document.getElementById('icon');
+            const apkFileName = document.getElementById('apkFileName');
+            const iconFileName = document.getElementById('iconFileName');
+            const apkButton = document.getElementById('apkButton');
+            const iconButton = document.getElementById('iconButton');
+            
+            apkInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    apkFileName.textContent = this.files[0].name;
+                    apkFileName.classList.add('show');
+                    apkButton.textContent = '已选择APK文件';
+                    apkButton.style.borderColor = '#6a11cb';
+                    apkButton.style.background = '#f0e6ff';
+                } else {
+                    apkFileName.textContent = '未选择文件';
+                    apkFileName.classList.remove('show');
+                    apkButton.textContent = '点击选择APK文件';
+                    apkButton.style.borderColor = '#ccc';
+                    apkButton.style.background = '#f0f0f0';
+                }
+            });
+            
+            iconInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    iconFileName.textContent = this.files[0].name;
+                    iconFileName.classList.add('show');
+                    iconButton.textContent = '已选择图标文件';
+                    iconButton.style.borderColor = '#6a11cb';
+                    iconButton.style.background = '#f0e6ff';
+                } else {
+                    iconFileName.textContent = '未选择文件';
+                    iconFileName.classList.remove('show');
+                    iconButton.textContent = '点击选择图标文件';
+                    iconButton.style.borderColor = '#ccc';
+                    iconButton.style.background = '#f0f0f0';
+                }
+            });
+            
+            // 表单提交处理
+            const form = document.getElementById('uploadForm');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const messageDiv = document.getElementById('message');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 验证表单
+                const name = document.getElementById('name').value.trim();
+                const apkFile = apkInput.files[0];
+                const iconFile = iconInput.files[0];
+                
+                if (!name) {
+                    showMessage('请输入应用名称', 'error');
+                    document.getElementById('name').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('name').classList.remove('shake');
+                    }, 500);
+                    return;
+                }
+                
+                if (!apkFile) {
+                    showMessage('请选择APK文件', 'error');
+                    apkButton.classList.add('shake');
+                    setTimeout(() => {
+                        apkButton.classList.remove('shake');
+                    }, 500);
+                    return;
+                }
+                
+                if (!iconFile) {
+                    showMessage('请选择应用图标', 'error');
+                    iconButton.classList.add('shake');
+                    setTimeout(() => {
+                        iconButton.classList.remove('shake');
+                    }, 500);
+                    return;
+                }
+                
+                // 验证文件类型
+                if (!apkFile.name.endsWith('.apk')) {
+                    showMessage('APK文件必须是.apk格式', 'error');
+                    apkButton.classList.add('shake');
+                    setTimeout(() => {
+                        apkButton.classList.remove('shake');
+                    }, 500);
+                    return;
+                }
+                
+                if (!iconFile.type.startsWith('image/')) {
+                    showMessage('图标必须是图片格式', 'error');
+                    iconButton.classList.add('shake');
+                    setTimeout(() => {
+                        iconButton.classList.remove('shake');
+                    }, 500);
+                    return;
+                }
+                
+                // 显示进度条
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                progressText.textContent = '准备上传...';
+                
+                // 使用FormData发送数据
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('apk', apkFile);
+                formData.append('icon', iconFile);
+                
+                // 使用XMLHttpRequest以便跟踪进度
+                const xhr = new XMLHttpRequest();
+                
+                // 上传进度事件
+                xhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        const percentComplete = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentComplete + '%';
+                        progressText.textContent = '上传中: ' + Math.round(percentComplete) + '%';
+                    }
+                });
+                
+                // 请求完成
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                progressBar.style.width = '100%';
+                                progressText.textContent = '上传完成！';
+                                showMessage(response.message, 'success');
+                                
+                                // 3秒后重置表单
+                                setTimeout(function() {
+                                    form.reset();
+                                    apkFileName.textContent = '未选择文件';
+                                    iconFileName.textContent = '未选择文件';
+                                    apkFileName.classList.remove('show');
+                                    iconFileName.classList.remove('show');
+                                    apkButton.textContent = '点击选择APK文件';
+                                    iconButton.textContent = '点击选择图标文件';
+                                    apkButton.style.borderColor = '#ccc';
+                                    iconButton.style.borderColor = '#ccc';
+                                    apkButton.style.background = '#f0f0f0';
+                                    iconButton.style.background = '#f0f0f0';
+                                    progressContainer.style.display = 'none';
+                                }, 3000);
+                            } else {
+                                showMessage(response.message, 'error');
+                                progressContainer.style.display = 'none';
+                            }
+                        } catch (e) {
+                            showMessage('服务器响应格式错误', 'error');
+                            progressContainer.style.display = 'none';
+                        }
+                    } else {
+                        showMessage('上传失败，服务器错误: ' + xhr.status, 'error');
+                        progressContainer.style.display = 'none';
+                    }
+                });
+                
+                // 请求错误
+                xhr.addEventListener('error', function() {
+                    showMessage('网络错误，上传失败', 'error');
+                    progressContainer.style.display = 'none';
+                });
+                
+                // 发送请求
+                xhr.open('POST', 'upload.php');
+                xhr.send(formData);
+            });
+            
+            // 显示消息函数
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = 'message ' + type;
+                messageDiv.style.display = 'block';
+                
+                // 5秒后自动隐藏消息
+                setTimeout(function() {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+            
+            // 刷新链接
+            document.getElementById('refreshLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                location.reload();
+            });
+            
+            // 创建背景气泡动画
+            function createBubbles() {
+                const bgAnimation = document.getElementById('bgAnimation');
+                const bubbleCount = 15;
+                
+                for (let i = 0; i < bubbleCount; i++) {
+                    const bubble = document.createElement('div');
+                    bubble.classList.add('bubble');
+                    
+                    // 随机大小和位置
+                    const size = Math.random() * 60 + 20;
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 15;
+                    const duration = Math.random() * 10 + 10;
+                    
+                    bubble.style.width = `${size}px`;
+                    bubble.style.height = `${size}px`;
+                    bubble.style.left = `${left}%`;
+                    bubble.style.animationDelay = `${delay}s`;
+                    bubble.style.animationDuration = `${duration}s`;
+                    
+                    bgAnimation.appendChild(bubble);
+                }
+            }
+            
+            // 触控特效实现
+            function createTouchEffect(x, y) {
+                const effect = document.createElement('div');
+                effect.classList.add('touch-effect');
+                effect.style.left = `${x}px`;
+                effect.style.top = `${y}px`;
+                document.body.appendChild(effect);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    effect.remove();
+                }, 600);
+            }
+            
+            // 为页面添加触控特效
+            document.addEventListener('click', function(e) {
+                createTouchEffect(e.clientX, e.clientY);
+            });
+            
+            // 为按钮添加触控反馈
+            const buttons = document.querySelectorAll('button, .file-input-button, .info-links a');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.classList.add('pulse');
+                });
+                
+                button.addEventListener('touchend', function() {
+                    this.classList.remove('pulse');
+                });
+            });
+            
+            // 为标题添加触控特效
+            const header = document.getElementById('pageHeader');
+            header.addEventListener('click', function() {
+                const h1 = this.querySelector('h1');
+                const p = this.querySelector('p');
+                
+                h1.classList.add('bounce');
+                p.classList.add('bounce');
+                
+                setTimeout(() => {
+                    h1.classList.remove('bounce');
+                    p.classList.remove('bounce');
+                }, 500);
+            });
+            
+            // 为输入框添加触控特效
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.querySelector('label').style.color = '#6a11cb';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.querySelector('label').style.color = '#444';
+                });
+            });
+            
+            // 添加长按特效
+            let longPressTimer;
+            const longPressElements = document.querySelectorAll('button, .file-input-button');
+            
+            longPressElements.forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    longPressTimer = setTimeout(() => {
+                        this.classList.add('pulse');
+                        createTouchEffect(
+                            this.getBoundingClientRect().left + this.offsetWidth/2,
+                            this.getBoundingClientRect().top + this.offsetHeight/2
+                        );
+                    }, 500);
+                });
+                
+                element.addEventListener('touchend', function() {
+                    clearTimeout(longPressTimer);
+                    this.classList.remove('pulse');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
