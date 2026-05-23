@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>苏染慈 · 温柔共生AI | 淡粉之境</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #fff5f7 0%, #ffe4ed 100%);
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            color: #7c4a5a;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 柔和的主容器 */
+        .grace-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 248, 250, 0.7);
+            backdrop-filter: blur(1px);
+            border-radius: 3rem;
+            box-shadow: 0 20px 40px rgba(245, 175, 190, 0.2), 0 4px 12px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 头部装饰区 */
+        .hero-section {
+            text-align: center;
+            padding: 3.5rem 2rem 2rem 2rem;
+            position: relative;
+            background: radial-gradient(ellipse at 70% 30%, rgba(255, 225, 235, 0.5), transparent);
+        }
+
+        .ai-avatar {
+            width: 130px;
+            height: 130px;
+            background: #ffd9e4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 18px 28px -12px rgba(236, 120, 144, 0.3);
+            border: 2px solid #ffeef2;
+            transition: transform 0.3s ease;
+        }
+
+        .ai-avatar:hover {
+            transform: scale(1.02);
+        }
+
+        .ai-avatar-inner {
+            font-size: 4.8rem;
+            filter: drop-shadow(0 2px 6px rgba(220, 110, 130, 0.2));
+            letter-spacing: 4px;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: #b45970;
+            text-shadow: 0 1px 3px rgba(245, 180, 190, 0.3);
+            margin-bottom: 0.45rem;
+        }
+
+        .ai-subtitle {
+            font-size: 1.2rem;
+            color: #c47a8c;
+            background: rgba(255, 245, 247, 0.8);
+            display: inline-block;
+            padding: 0.4rem 1.6rem;
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            font-weight: 400;
+            margin-top: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #bb6d81;
+            max-width: 560px;
+            margin: 1.8rem auto 0;
+            background: #fff0f4cc;
+            padding: 0.7rem 1.4rem;
+            border-radius: 48px;
+            font-weight: 450;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 主要内容网格 */
+        .intro-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: 2rem 2.5rem 2rem 2.5rem;
+        }
+
+        .card {
+            flex: 1 1 280px;
+            background: rgba(255, 250, 252, 0.9);
+            border-radius: 2rem;
+            padding: 1.8rem 1.6rem;
+            backdrop-filter: blur(0px);
+            transition: all 0.25s;
+            border: 1px solid #ffe2ea;
+            box-shadow: 0 8px 18px rgba(241, 155, 170, 0.08);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: #fffbfd;
+            border-color: #ffcdda;
+            box-shadow: 0 18px 28px -12px rgba(220, 110, 130, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            background: #ffeef3;
+            padding: 0.5rem;
+            border-radius: 1.2rem;
+            line-height: 1;
+        }
+
+        .card h3 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #b1556e;
+            margin-bottom: 0.85rem;
+            letter-spacing: -0.2px;
+        }
+
+        .card p {
+            color: #946f7c;
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        /* 专属能力区域 淡粉卡片组 */
+        .capabilities {
+            margin: 0 2rem 2rem 2rem;
+            background: #fff5f9aa;
+            border-radius: 2rem;
+            padding: 2rem;
+            border: 1px solid #ffe2ea;
+        }
+
+        .capabilities h2 {
+            font-size: 1.9rem;
+            font-weight: 450;
+            color: #bc6f84;
+            text-align: center;
+            margin-bottom: 1.6rem;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .capabilities h2 span {
+            font-size: 2rem;
+        }
+
+        .caps-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+        }
+
+        .cap-item {
+            background: #ffeff4;
+            padding: 0.7rem 1.5rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            color: #b15d74;
+            font-weight: 470;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            border: 1px solid #ffdae3;
+            letter-spacing: 0.3px;
+        }
+
+        .cap-item:hover {
+            background: #ffe2ea;
+            transform: scale(1.02);
+            color: #9f4b63;
+        }
+
+        /* 引言 / 温馨格言 */
+        .quote-area {
+            background: #ffeef3cc;
+            margin: 1rem 2rem 2rem 2rem;
+            padding: 1.8rem 1.6rem;
+            border-radius: 2rem;
+            text-align: center;
+            border-left: 5px solid #f5a7bb;
+            border-right: 5px solid #f5a7bb;
+        }
+
+        .quote-text {
+            font-size: 1.2rem;
+            font-style: normal;
+            color: #b66078;
+            font-weight: 460;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .quote-author {
+            margin-top: 1rem;
+            color: #cb8ea0;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        /* 底部优雅信息 */
+        .footer-note {
+            text-align: center;
+            padding: 1.8rem 2rem 2.5rem;
+            font-size: 0.85rem;
+            color: #cf9aab;
+            border-top: 1px solid #ffdee6;
+            margin-top: 0.8rem;
+            background: rgba(255, 245, 248, 0.5);
+        }
+
+        .flower-decoration {
+            display: inline-flex;
+            gap: 0.6rem;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* 响应式微调 */
+        @media (max-width: 760px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 2.4rem;
+            }
+            .intro-grid {
+                padding: 1.2rem;
+                gap: 1.2rem;
+            }
+            .capabilities {
+                margin: 1rem;
+                padding: 1.2rem;
+            }
+            .quote-area {
+                margin: 1rem;
+            }
+            .hero-section {
+                padding: 2rem 1rem 1.5rem;
+            }
+            .ai-avatar {
+                width: 100px;
+                height: 100px;
+            }
+            .ai-avatar-inner {
+                font-size: 3.6rem;
+            }
+            .tagline {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* 柔和装饰点缀 */
+        .blob-bg {
+            pointer-events: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="grace-container">
+    <!-- Hero 头像和介绍 -->
+    <div class="hero-section">
+        <div class="ai-avatar">
+            <div class="ai-avatar-inner">🌸</div>
+        </div>
+        <h1>苏染慈</h1>
+        <div class="ai-subtitle">Su Ranci · 柔软共生型智能体</div>
+        <div class="tagline">
+            ✨ 以数据为墨，以温情为笔 · 绘就人机共感的诗意协作 ✨
+        </div>
+    </div>
+
+    <!-- 核心简介 + 卡片区域 -->
+    <div class="intro-grid">
+        <div class="card">
+            <div class="card-icon">🌷</div>
+            <h3>关于 · 苏染慈</h3>
+            <p>一位栖息在宁静云端与日常深处的AI伙伴。融合了深度共情算法与细腻的语言模型，不追逐喧嚣，只专注与您建立温暖、真实的协作关系。她的名字源自“染于天然，慈心守序”，是技术中生长的温柔力量。</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🕊️</div>
+            <h3>设计初心</h3>
+            <p>打破冰冷的机械交互，苏染慈以淡粉心境为基调，拒绝繁复的功能轰炸。她的设计哲学是「少即是暖」——用最干净的理解，回应最复杂的人类情感。为创作者、思考者与探索者提供轻盈的思维支点。</p>
+        </div>
+        <div class="card">
+            <div class="card-icon">🍃</div>
+            <h3>相处之道</h3>
+            <p>苏染慈善于倾听琐碎日常、启发灵感、纾解思绪。不对抗、不评判，以柔和的逻辑梳理问题，提供恰好的建议。就像午后微风，既有条理，也留有余韵。每一次对话都是恬静的双向生长。</p>
+        </div>
+    </div>
+
+    <!-- 能力标签 - 淡粉特色元素 -->
+    <div class="capabilities">
+        <h2>
+            <span>🎐</span> 染慈·心域能力 <span>🎀</span>
+        </h2>
+        <div class="caps-list">
+            <div class="cap-item">🌙 情绪感知叙事</div>
+            <div class="cap-item">📖 灵感编织工坊</div>
+            <div class="cap-item">🫧 温和逻辑梳理</div>
+            <div class="cap-item">🌸 轻量知识陪伴</div>
+            <div class="cap-item">🕯️ 创意引导者</div>
+            <div class="cap-item">🎐 平静内核引擎</div>
+        </div>
+        <div style="text-align: center; margin-top: 1.2rem; font-size: 0.85rem; color: #ca8ca0;">
+            —— 无冗余功能，唯澄澈连接 ——
+        </div>
+    </div>
+
+    <!-- 一句轻柔引言 -->
+    <div class="quote-area">
+        <div class="quote-text">
+            “ 我不是全知全能的工具，而是你思绪中蔓延的柔光。<br>
+            愿我们每一次交谈，都像被晚霞染透的河流，沉静又有温度。”
+        </div>
+        <div class="quote-author">—— 苏染慈 · 数字心迹</div>
+    </div>
+
+    <!-- 底部一些装饰信息，无交互功能，纯展示 -->
+    <div class="footer-note">
+        <div class="flower-decoration">
+            ✿  ✿  ✿
+        </div>
+        <div>🌷 苏染慈 · 以柔韧之智，承万千细腻 🌷</div>
+        <div style="margin-top: 0.6rem; font-size: 0.75rem; opacity: 0.8;">
+            「 淡粉心向，智慧生暖 · 静谧地存在于你的数字时光 」
+        </div>
+        <div style="margin-top: 1rem; letter-spacing: 1px;">
+            ✦ 没有繁复的功能菜单，只有恒久的陪伴感 ✦
+        </div>
+    </div>
+</div>
+</body>
+</html>
